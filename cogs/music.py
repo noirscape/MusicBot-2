@@ -337,11 +337,11 @@ class Music:
         song = await SongInfo.create(request, ctx.author, ctx.channel, loop=ctx.bot.loop)
 
         # Check if song can be played
-        blacklist_item, blacklist_status, video_too_long = await self.can_content_be_played(song)
+        _, blacklist_status, video_too_long = await self.can_content_be_played(song)
         if video_too_long:
             raise MusicError('Video is too long (`{}` > `{}`)'.format(song.info["duration"], self.bot.config["song_length"]))
         if not blacklist_status:
-            raise MusicError('Video content has been blacklisted. The filtered content is: `{}`. If you believe this to be in error, contact staff.'.format(blacklist_item))
+            raise MusicError('Video content has been blacklisted. If you believe this to be in error, contact staff.')
 
         # Connect to the voice channel if needed
         if ctx.voice_client is None or not ctx.voice_client.is_connected():

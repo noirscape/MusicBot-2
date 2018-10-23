@@ -63,6 +63,7 @@ load_autoload_cogs()
 get_names_of_unloaded_cogs()
 
 @bot.command()
+@commands.is_owner()
 async def list_cogs(ctx):
     '''Lists all cogs and their status of loading.'''
     cog_list = commands.Paginator(prefix='', suffix='')
@@ -77,6 +78,7 @@ async def list_cogs(ctx):
         await ctx.send(page)
 
 @bot.command()
+@commands.is_owner()
 async def load(ctx, cog):
     '''Try and load the selected cog.'''
     if cog not in bot.unloaded_cogs:
@@ -94,6 +96,7 @@ async def load(ctx, cog):
         await ctx.send('✅ Cog succesfully loaded.')
 
 @bot.command()
+@commands.is_owner()
 async def unload(ctx, cog):
     if cog not in bot.loaded_cogs:
         return await ctx.send('💢 Cog not loaded.')

@@ -1,4 +1,4 @@
-prefix: *
+prefix: '*'
 autoload_cogs:
   - music
 song_length: 1200

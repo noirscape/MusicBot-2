@@ -246,7 +246,9 @@ class Music:
         self.bot = bot
         self.music_states = {}
         with open('blacklist.json') as blacklist:
-            self.blacklisted_users = set(json.load(blacklist)["blacklist"])
+            blacklist_dict = json.load(blacklist)
+            self.blacklisted_users = set(blacklist_dict["users"])
+            self.blacklisted_videos = set(blacklist_dict["videos"])
 
     def __unload(self):
         for state in self.music_states.values():
@@ -271,6 +273,12 @@ class Music:
 
     def get_music_state(self, guild_id):
         return self.music_states.setdefault(guild_id, GuildMusicState(self.bot.loop))
+
+    async def can_content_be_played(self, song: SongInfo):
+        for blacklisted_item in self.blacklisted_videos:
+            if blacklisted_item in song.info["title"] or blacklisted_item in song.info["description"] or blacklisted_item in song.info["id"] or blacklisted_item in song.info["uploader"]:
+                return blacklisted_item, False
+        return None, True
 
     def has_super_powers():
         async def predicate(ctx):
@@ -325,6 +333,11 @@ class Music:
 
         # Create the SongInfo
         song = await SongInfo.create(request, ctx.author, ctx.channel, loop=ctx.bot.loop)
+
+        # Check if song can be played
+        blacklist_item, blacklist_status = await self.can_content_be_played(song)
+        if not blacklist_status:
+            raise MusicError('Video content has been blacklisted. The filtered content is: `{}`. If you believe this to be in error, contact staff.'.format(blacklist_item))
 
         # Connect to the voice channel if needed
         if ctx.voice_client is None or not ctx.voice_client.is_connected():
@@ -391,7 +404,7 @@ class Music:
         if user.id not in self.blacklisted_users:
             self.blacklisted_users.add(user.id)
             with open('blacklist.json', 'w') as blacklist_file:
-                json.dump({"blacklist": list(self.blacklisted_users)}, blacklist_file)
+                json.dump({"users": list(self.blacklisted_users), "videos": list(self.blacklisted_videos)}, blacklist_file)
             return await ctx.send('Succesfully blacklisted user {}!'.format(user.display_name))
         else:
             return await ctx.send('User already blacklisted.')
@@ -408,7 +421,7 @@ class Music:
             return await ctx.send('User not blacklisted.')
         else:
             with open('blacklist.json', 'w') as blacklist_file:
-                json.dump({"blacklist": list(self.blacklisted_users)}, blacklist_file)
+                json.dump({"users": list(self.blacklisted_users), "videos": list(self.blacklisted_videos)}, blacklist_file)
             return await ctx.send('Succesfully removed user {} from blacklist!'.format(user.display_name))
 
     @user.command(name='show')
@@ -421,6 +434,59 @@ class Music:
         paginator.add_line('___Blacklisted users___')
         for blacklisted_user in self.blacklisted_users:
             paginator.add_line('{} (ID: {})'.format(str(await self.bot.get_user_info(blacklisted_user)), blacklisted_user))
+        for page in paginator.pages:
+            await ctx.author.send(page)
+
+    @blacklist.group()
+    @has_super_powers()
+    async def video(self, ctx):
+        """Blacklist videos.
+
+        noirscape & Staff & Helpers only."""
+
+    @video.command(name='add')
+    @has_super_powers()
+    async def video_add(self, ctx, string):
+        """Adds a video to the blacklist.
+
+        The blacklist can contains video IDs or words that will be matched in the title or description. 
+        If any of the words is in the blacklist, the video will not play.
+        
+        noirscape & Staff & Helpers only."""
+        if string not in self.blacklisted_videos:
+            self.blacklisted_videos.add(string)
+            with open('blacklist.json', 'w') as blacklist_file:
+                json.dump({"users": list(self.blacklisted_users), "videos": list(self.blacklisted_videos)}, blacklist_file)
+            return await ctx.send('Succesfully blacklisted video content `{}`!'.format(string))
+        else:
+            return await ctx.send('Video content already on blacklist.')
+
+
+    @video.command(name='remove')
+    @has_super_powers()
+    async def video_remove(self, ctx, string):
+        """Removes a video from the blacklist.
+
+        noirscape & Staff & Helpers only."""
+        try:
+            self.blacklisted_videos.remove(string)
+        except KeyError:
+            return await ctx.send('User not blacklisted.')
+        else:
+            with open('blacklist.json', 'w') as blacklist_file:
+                json.dump({"users": list(self.blacklisted_users), "videos": list(self.blacklisted_videos)}, blacklist_file)
+            return await ctx.send('Succesfully removed video content `{}` from blacklist!'.format(string))
+
+    @video.command(name='show')
+    @has_super_powers()
+    async def video_show(self, ctx):
+        """DMs the blacklist.
+
+        noirscape & Staff & Helpers only."""
+        paginator = commands.Paginator(prefix='', suffix='')
+        paginator.add_line('___Blacklisted video content___')
+        for blacklisted_video in self.blacklisted_videos:
+            paginator.add_line('- `{}`'.format(blacklisted_video))
         for page in paginator.pages:
             await ctx.author.send(page)
 

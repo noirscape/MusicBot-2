@@ -24,6 +24,7 @@ secure = yaml.safe_load(open('secure.yml'))
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(
     config['prefix']),
     description='')
+bot.config = config
 
 bot.loaded_cogs = []
 bot.unloaded_cogs = []

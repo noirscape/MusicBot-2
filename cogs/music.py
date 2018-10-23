@@ -275,10 +275,12 @@ class Music:
         return self.music_states.setdefault(guild_id, GuildMusicState(self.bot.loop))
 
     async def can_content_be_played(self, song: SongInfo):
+        if song.info["duration"] > self.bot.config["song_length"]:
+            return None, None, True
         for blacklisted_item in self.blacklisted_videos:
             if blacklisted_item in song.info["title"] or blacklisted_item in song.info["description"] or blacklisted_item in song.info["id"] or blacklisted_item in song.info["uploader"]:
-                return blacklisted_item, False
-        return None, True
+                return blacklisted_item, False, False
+        return None, True, False
 
     def has_super_powers():
         async def predicate(ctx):
@@ -335,7 +337,9 @@ class Music:
         song = await SongInfo.create(request, ctx.author, ctx.channel, loop=ctx.bot.loop)
 
         # Check if song can be played
-        blacklist_item, blacklist_status = await self.can_content_be_played(song)
+        blacklist_item, blacklist_status, video_too_long = await self.can_content_be_played(song)
+        if video_too_long:
+            raise MusicError('Video is too long (`{}` > `{}`)'.format(song.info["duration"], self.bot.config["song_length"]))
         if not blacklist_status:
             raise MusicError('Video content has been blacklisted. The filtered content is: `{}`. If you believe this to be in error, contact staff.'.format(blacklist_item))
 

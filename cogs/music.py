@@ -409,7 +409,7 @@ class Music:
             self.blacklisted_users.add(user.id)
             with open('blacklist.json', 'w') as blacklist_file:
                 json.dump({"users": list(self.blacklisted_users), "videos": list(self.blacklisted_videos)}, blacklist_file)
-            return await ctx.send('Succesfully blacklisted user `{}`!'.format(str(user))
+            return await ctx.send('Succesfully blacklisted user `{}`!'.format(str(user)))
         else:
             return await ctx.send('User already blacklisted.')
 

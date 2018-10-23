@@ -2,3 +2,4 @@ secure.yml
 config.yml
 **.pyc
 venv
+blacklist.json

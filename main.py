@@ -14,6 +14,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import yaml
+import discord
 from discord.ext import commands
 import os
 
@@ -105,6 +106,16 @@ async def unload(ctx, cog):
     bot.loaded_cogs.remove(cog)
     bot.unloaded_cogs.append(cog)
     await ctx.send('✅ Cog succesfully unloaded.')
+
+@bot.command()
+async def about(ctx):
+    """About Soundhax 2"""
+    embed = discord.Embed(title="Soundhax 2")
+    embed.set_author(name="noirscape, based on a module by thecommondude")
+    embed.set_thumbnail(url="https://loli.catgirlsin.space/ea/9c684fd8063001e455a24c5d7d0507d755ce7f.png ")
+    embed.url = "https://github.com/noirscape/MusicBot-2"
+    embed.description = "A music bot."
+    await ctx.send(embed=embed)
 
 @bot.event
 async def on_ready():

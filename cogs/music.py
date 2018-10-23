@@ -330,7 +330,7 @@ class Music:
         https://github.com/rg3/youtube-dl/blob/1b6712ab2378b2e8eb59f372fb51193f8d3bdc97/docs/supportedsites.md
         """
         if ctx.author.id in self.blacklisted_users:
-            return await ctx.send('Cannot add track, {} has been blacklisted.'.format(ctx.author))
+            raise MusicError('Cannot add track, {} has been blacklisted.'.format(ctx.author))
         await ctx.message.add_reaction('\N{HOURGLASS}')
 
         # Create the SongInfo
@@ -391,6 +391,8 @@ class Music:
         """Blacklist commands
 
         noirscape & Staff & Helpers only."""
+        if ctx.invoked_subcommand is None:
+            await ctx.invoke(self.bot.get_command('help'), ctx.command.qualified_name)
 
     @blacklist.group()
     @has_super_powers()
@@ -398,6 +400,8 @@ class Music:
         """Blacklist users/remove them from the blacklist.
 
         noirscape & Staff & Helpers only."""
+        if ctx.invoked_subcommand is None:
+            await ctx.invoke(self.bot.get_command('help'), ctx.command.qualified_name)
 
     @user.command(name='add')
     @has_super_powers()
@@ -447,6 +451,8 @@ class Music:
         """Blacklist videos.
 
         noirscape & Staff & Helpers only."""
+        if ctx.invoked_subcommand is None:
+            await ctx.invoke(self.bot.get_command('help'), ctx.command.qualified_name)
 
     @video.command(name='add')
     @has_super_powers()
@@ -542,8 +548,13 @@ class Music:
     async def skip(self, ctx):
         """Votes to skip the current song.
 
+        If you are the one who added the song, you will skip instantly.
+
         To configure the minimum number of votes needed, use `minskips`
         """
+        if ctx.author.id in self.blacklisted_users:
+            raise MusicError('Cannot skip track, {} has been blacklisted.'.format(ctx.author))
+
         if not ctx.music_state.is_playing():
             raise MusicError('Not playing anything to skip.')
 
@@ -558,6 +569,15 @@ class Music:
         if len(ctx.music_state.skips) > ctx.music_state.min_skips or ctx.author == ctx.music_state.current_song.requester:
             ctx.music_state.skips.clear()
             ctx.voice_client.stop()
+
+    @commands.command()
+    @has_super_powers()
+    async def force_skip(self, ctx):
+        """Forcibly skips the current song.
+
+        noirscape & Staff & Helpers only."""
+        ctx.music_state.skips.clear()
+        ctx.voice_client.stop()
 
     @commands.command()
     @has_super_powers()

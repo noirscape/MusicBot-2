@@ -149,10 +149,10 @@ class SongInfo:
         await self.downloaded.wait()
 
     def __str__(self):
-        title = "**{}**".format(self.info['title'])
-        creator = "**{}**".format(self.info.get('creator') or self.info['uploader'])
+        title = "`{}`".format(self.info['title'])
+        creator = "`{}`".format(self.info.get('creator') or self.info['uploader'])
         duration = " (duration: {})".format(duration_to_str(self.info['duration'])) if 'duration' in self.info else ''
-        requester = "**{}**".format(self.requester)
+        requester = "`{}`".format(self.requester)
         return '{} from {}{} added by {}'.format(title, creator, duration, requester)
 
 
@@ -360,7 +360,7 @@ class Music:
         else:
             # Schedule the song's download
             ctx.bot.loop.create_task(song.download(ctx.bot.loop))
-            await ctx.send('Queued {} in position **#{}**'.format(song, ctx.music_state.playlist.qsize()))
+            await ctx.send('Queued `{}` in position **#{}**'.format(song, ctx.music_state.playlist.qsize()))
 
         await ctx.message.remove_reaction('\N{HOURGLASS}', ctx.me)
         await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}')
@@ -409,7 +409,7 @@ class Music:
             self.blacklisted_users.add(user.id)
             with open('blacklist.json', 'w') as blacklist_file:
                 json.dump({"users": list(self.blacklisted_users), "videos": list(self.blacklisted_videos)}, blacklist_file)
-            return await ctx.send('Succesfully blacklisted user {}!'.format(user.display_name))
+            return await ctx.send('Succesfully blacklisted user `{}`!'.format(str(user))
         else:
             return await ctx.send('User already blacklisted.')
 
@@ -426,7 +426,7 @@ class Music:
         else:
             with open('blacklist.json', 'w') as blacklist_file:
                 json.dump({"users": list(self.blacklisted_users), "videos": list(self.blacklisted_videos)}, blacklist_file)
-            return await ctx.send('Succesfully removed user {} from blacklist!'.format(user.display_name))
+            return await ctx.send('Succesfully removed user {} from blacklist!'.format(str(user)))
 
     @user.command(name='show')
     @has_super_powers()
@@ -475,7 +475,7 @@ class Music:
         try:
             self.blacklisted_videos.remove(string)
         except KeyError:
-            return await ctx.send('User not blacklisted.')
+            return await ctx.send('Video content not blacklisted.')
         else:
             with open('blacklist.json', 'w') as blacklist_file:
                 json.dump({"users": list(self.blacklisted_users), "videos": list(self.blacklisted_videos)}, blacklist_file)

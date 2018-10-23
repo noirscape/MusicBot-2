@@ -1,3 +1,4 @@
-prefix: n!
+prefix: *
 autoload_cogs:
-  - sample_cog
+  - music
+song_length: 1200

@@ -1,2 +1,4 @@
 pyyaml
 git+https://github.com/Rapptz/discord.py@rewrite
+youtube-dl
+pynacl

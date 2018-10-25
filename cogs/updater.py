@@ -50,7 +50,7 @@ class Git:
     async def update_requirements(self, ctx):
         """Use pip to update the requirements.
         """
-        process = subprocess.Popen([sys.executable + " -m pip install --user -U -r requirements.txt"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([sys.executable + " -m pip install -U -r requirements.txt"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
 
         h_stdout = await self.hastebin(stdout.decode('utf-8'))

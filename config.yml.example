@@ -1,4 +1,5 @@
 prefix: '*'
 autoload_cogs:
   - music
+  - updater
 song_length: 1200

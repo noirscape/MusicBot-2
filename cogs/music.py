@@ -3,10 +3,12 @@ import functools
 import logging
 import os
 import pathlib
+import re
 import json
 
 import discord
 import discord.ext.commands as commands
+from yarl import URL
 import youtube_dl
 
 
@@ -463,6 +465,15 @@ class Music:
         If any of the words is in the blacklist, the video will not play.
         
         noirscape & Staff & Helpers only."""
+
+        # Check if argument given is a valid YouTube URL first.
+        if re.search(r"https?://(?:www\.)?(youtube|youtu\.be)", string, re.I):
+            url = URL(string)
+            if url.host == "youtu.be":
+                string = url.path[1:]
+            else:
+                string = url.query['v']
+
         if string not in self.blacklisted_videos:
             self.blacklisted_videos.add(string)
             with open('blacklist.json', 'w') as blacklist_file:
@@ -478,6 +489,14 @@ class Music:
         """Removes a video from the blacklist.
 
         noirscape & Staff & Helpers only."""
+
+        # Check if argument given is a valid YouTube URL first.
+        if re.search(r"https?://(?:www\.)?(youtube|youtu\.be)", string, re.I):
+            url = URL(string)
+            if url.host == "youtu.be":
+                string = url.path[1:]
+            else:
+                string = url.query['v']
         try:
             self.blacklisted_videos.remove(string)
         except KeyError:

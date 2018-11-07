@@ -290,7 +290,7 @@ class Music:
             return "Helpers" in user_role_list or "Staff" in user_role_list or ctx.author.id == 126747960972279808
         return commands.check(predicate)
 
-    @commands.command()
+    @commands.command(aliases=['np'])
     async def status(self, ctx):
         """Displays the currently played song."""
         if ctx.music_state.is_playing():
@@ -387,25 +387,23 @@ class Music:
         else:
             await ctx.send('Song removed from playlist!')
 
-    @commands.group()
+    @commands.group(invoke_without_command=True)
     @has_super_powers()
     async def blacklist(self, ctx):
         """Blacklist commands
 
         noirscape & Staff & Helpers only."""
-        if ctx.invoked_subcommand is None:
-            await ctx.invoke(self.bot.get_command('help'), ctx.command.qualified_name)
+        await ctx.invoke(self.bot.get_command('help'), *ctx.command.qualified_name.split())
 
-    @blacklist.group()
+    @blacklist.group(invoke_without_command=True)
     @has_super_powers()
     async def user(self, ctx):
         """Blacklist users/remove them from the blacklist.
 
         noirscape & Staff & Helpers only."""
-        if ctx.invoked_subcommand is None:
-            await ctx.invoke(self.bot.get_command('help'), ctx.command.qualified_name)
+        await ctx.invoke(self.bot.get_command('help'), *ctx.command.qualified_name.split())
 
-    @user.command(name='add')
+    @user.command(name='add', aliases=['+'])
     @has_super_powers()
     async def user_add(self, ctx, user: discord.User):
         """Adds a user to the blacklist
@@ -419,7 +417,7 @@ class Music:
         else:
             return await ctx.send('User already blacklisted.')
 
-    @user.command(name='remove')
+    @user.command(name='remove', aliases=['-'])
     @has_super_powers()
     async def user_remove(self, ctx, user: discord.User):
         """Removes a user from the blacklist.
@@ -447,16 +445,15 @@ class Music:
         for page in paginator.pages:
             await ctx.author.send(page)
 
-    @blacklist.group()
+    @blacklist.group(invoke_without_command=True)
     @has_super_powers()
     async def video(self, ctx):
         """Blacklist videos.
 
         noirscape & Staff & Helpers only."""
-        if ctx.invoked_subcommand is None:
-            await ctx.invoke(self.bot.get_command('help'), ctx.command.qualified_name)
+        await ctx.invoke(self.bot.get_command('help'), *ctx.command.qualified_name.split())
 
-    @video.command(name='add')
+    @video.command(name='add', aliases=['+'])
     @has_super_powers()
     async def video_add(self, ctx, string):
         """Adds a video to the blacklist.
@@ -483,7 +480,7 @@ class Music:
             return await ctx.send('Video content already on blacklist.')
 
 
-    @video.command(name='remove')
+    @video.command(name='remove', aliases=['-'])
     @has_super_powers()
     async def video_remove(self, ctx, string):
         """Removes a video from the blacklist.

@@ -232,6 +232,8 @@ class GuildMusicState:
         if song and not song.local_file and song.filename not in [s.filename for s in self.playlist]:
             os.remove(song.filename)
 
+        self.skips.clear()
+
         if self.playlist.empty():
             await self.stop()
         else:

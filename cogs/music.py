@@ -299,7 +299,7 @@ class Music:
         else:
             await ctx.send('Not playing.')
 
-    @commands.command()
+    @commands.command(aliases=['queue'])
     async def playlist(self, ctx):
         """Shows info about the current playlist and currently playing track."""
         await ctx.invoke(self.bot.get_command('status'))

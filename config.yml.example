@@ -3,3 +3,4 @@ autoload_cogs:
   - music
   - updater
 song_length: 1200
+percentage_skip: 0.5

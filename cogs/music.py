@@ -579,12 +579,21 @@ class Music:
         if ctx.author.id in ctx.music_state.skips:
             raise MusicError('{} You already voted to skip that song'.format(ctx.author.mention))
 
+        if ctx.author not in ctx.music_state.voice_client.channel.members:
+            raise MusicError('You are not in the voice channel.')
+
         # Count the vote
         ctx.music_state.skips.add(ctx.author.id)
         await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 
+        # Get total amount of members in voice channel, exempting the bot.
+        listeners = len(ctx.music_state.voice_client.channel.members) - 1
+
+        # Calculate if percentage to skip matches
+        percentage_skip = listeners * self.bot.config["percentage_skip"] >= len(ctx.music_state.skips)
+
         # Check if the song has to be skipped
-        if len(ctx.music_state.skips) > ctx.music_state.min_skips or ctx.author == ctx.music_state.current_song.requester:
+        if len(ctx.music_state.skips) > ctx.music_state.min_skips or percentage_skip or ctx.author == ctx.music_state.current_song.requester:
             ctx.music_state.skips.clear()
             ctx.voice_client.stop()
 

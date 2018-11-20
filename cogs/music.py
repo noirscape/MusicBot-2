@@ -590,7 +590,7 @@ class Music:
         listeners = len(ctx.music_state.voice_client.channel.members) - 1
 
         # Calculate if percentage to skip matches
-        percentage_skip = listeners * self.bot.config["percentage_skip"] >= len(ctx.music_state.skips)
+        percentage_skip = len(ctx.music_state.skips) >= listeners * self.bot.config["percentage_skip"]
 
         # Check if the song has to be skipped
         if len(ctx.music_state.skips) > ctx.music_state.min_skips or percentage_skip or ctx.author == ctx.music_state.current_song.requester:

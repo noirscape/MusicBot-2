@@ -289,7 +289,7 @@ class Music:
     def has_super_powers():
         async def predicate(ctx):
             user_role_list = [x.name for x in ctx.author.roles]
-            return "Helpers" in user_role_list or "Staff" in user_role_list or ctx.author.id == 126747960972279808
+            return "Helpers" in user_role_list or "Staff" in user_role_list
         return commands.check(predicate)
 
     @commands.command(aliases=['np'])
@@ -439,7 +439,7 @@ class Music:
     async def user_show(self, ctx):
         """DMs the blacklist.
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         paginator = commands.Paginator(prefix='', suffix='')
         paginator.add_line('___Blacklisted users___')
         for blacklisted_user in self.blacklisted_users:
@@ -452,7 +452,7 @@ class Music:
     async def video(self, ctx):
         """Blacklist videos.
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         await ctx.invoke(self.bot.get_command('help'), *ctx.command.qualified_name.split())
 
     @video.command(name='add', aliases=['+'])
@@ -463,7 +463,7 @@ class Music:
         The blacklist can contains video IDs or words that will be matched in the title or description. 
         If any of the words is in the blacklist, the video will not play.
         
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
 
         # Check if argument given is a valid YouTube URL first.
         if re.search(r"https?://(?:www\.)?(youtube|youtu\.be)", string, re.I):
@@ -487,7 +487,7 @@ class Music:
     async def video_remove(self, ctx, string):
         """Removes a video from the blacklist.
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
 
         # Check if argument given is a valid YouTube URL first.
         if re.search(r"https?://(?:www\.)?(youtube|youtu\.be)", string, re.I):
@@ -510,7 +510,7 @@ class Music:
     async def video_show(self, ctx):
         """DMs the blacklist.
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         paginator = commands.Paginator(prefix='', suffix='')
         paginator.add_line('___Blacklisted video content___')
         for blacklisted_video in self.blacklisted_videos:
@@ -523,7 +523,7 @@ class Music:
     async def pause(self, ctx):
         """Pauses the player.
         
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         if ctx.voice_client:
             ctx.voice_client.pause()
 
@@ -532,7 +532,7 @@ class Music:
     async def resume(self, ctx):
         """Resumes the player.
         
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         if ctx.voice_client:
             ctx.voice_client.resume()
 
@@ -541,7 +541,7 @@ class Music:
     async def stop(self, ctx):
         """Stops the player, clears the playlist and leaves the voice channel.
         
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         await ctx.music_state.stop()
 
     @commands.command()
@@ -549,7 +549,7 @@ class Music:
     async def volume(self, ctx, volume: int = None):
         """Sets the volume of the player, scales from 0 to 100.
         
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         if volume < 0 or volume > 100:
             raise MusicError('The volume level has to be between 0 and 100.')
         ctx.music_state.volume = volume / 100
@@ -559,7 +559,7 @@ class Music:
     async def clear(self, ctx):
         """Clears the playlist.
         
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         ctx.music_state.playlist.clear()
 
     @commands.command()
@@ -602,7 +602,7 @@ class Music:
     async def force_skip(self, ctx):
         """Forcibly skips the current song.
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         ctx.music_state.skips.clear()
         ctx.voice_client.stop()
 
@@ -611,5 +611,5 @@ class Music:
     async def minskips(self, ctx, number: int):
         """Sets the minimum number of votes to skip a song.
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         ctx.music_state.min_skips = number

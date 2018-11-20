@@ -113,7 +113,7 @@ async def about(ctx):
     embed = discord.Embed(title="Soundhax 2")
     embed.set_author(name="noirscape, based on a module by thecommondude")
     embed.set_thumbnail(url="https://loli.catgirlsin.space/ea/9c684fd8063001e455a24c5d7d0507d755ce7f.png ")
-    embed.url = "https://github.com/noirscape/MusicBot-2"
+    embed.url = "https://github.com/chenzw95/MusicBot-2"
     embed.description = "A music bot."
     await ctx.send(embed=embed)
 

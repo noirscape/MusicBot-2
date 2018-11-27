@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import yaml
 import discord
 from discord.ext import commands
@@ -29,6 +30,13 @@ bot.config = config
 
 bot.loaded_cogs = []
 bot.unloaded_cogs = []
+
+def initLogging():
+    logformat = "%(asctime)s %(name)s:%(levelname)s:%(message)s"
+    logging.basicConfig(level=logging.INFO, format=logformat,
+                        datefmt='%Y-%m-%d %H:%M:%S')
+    logging.getLogger("discord").setLevel(logging.WARNING)
+    return logging.getLogger("musicbot2")
 
 def check_if_dirs_exist():
     '''Function that creates the "cogs" directory if it doesn't exist already'''
@@ -125,4 +133,5 @@ async def on_ready():
     print(bot.user.id)
     print('----------')
 
+bot.logger = initLogging()
 bot.run(secure["token"])

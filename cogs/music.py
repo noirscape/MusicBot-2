@@ -314,7 +314,7 @@ class Music:
 
         If no channel is given, summons it to your current voice channel.
         
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         if channel is None and not ctx.author.voice:
             raise MusicError('You are not in a voice channel nor specified a voice channel for me to join.')
 
@@ -379,7 +379,7 @@ class Music:
     async def remove_song(self, ctx, idx: int):
         """Removes the song at the position in the autoplaylist.
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         if idx < 0:
             raise MusicError('Position must be above 0!')
         try:
@@ -394,7 +394,7 @@ class Music:
     async def blacklist(self, ctx):
         """Blacklist commands
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         await ctx.invoke(self.bot.get_command('help'), *ctx.command.qualified_name.split())
 
     @blacklist.group(invoke_without_command=True)
@@ -402,7 +402,7 @@ class Music:
     async def user(self, ctx):
         """Blacklist users/remove them from the blacklist.
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         await ctx.invoke(self.bot.get_command('help'), *ctx.command.qualified_name.split())
 
     @user.command(name='add', aliases=['+'])
@@ -410,7 +410,7 @@ class Music:
     async def user_add(self, ctx, user: discord.User):
         """Adds a user to the blacklist
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         if user.id not in self.blacklisted_users:
             self.blacklisted_users.add(user.id)
             with open('blacklist.json', 'w') as blacklist_file:
@@ -424,7 +424,7 @@ class Music:
     async def user_remove(self, ctx, user: discord.User):
         """Removes a user from the blacklist.
 
-        noirscape & Staff & Helpers only."""
+        Staff & Helpers only."""
         try:
             self.blacklisted_users.remove(user.id)
         except KeyError:

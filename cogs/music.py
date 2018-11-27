@@ -194,10 +194,11 @@ class Playlist(asyncio.Queue):
 
 
 class GuildMusicState:
-    def __init__(self, loop):
+    def __init__(self, bot):
+        self.bot = bot
         self.playlist = Playlist(maxsize=50)
         self.voice_client = None
-        self.loop = loop
+        self.loop = bot.loop
         self.player_volume = 0.5
         self.skips = set()
         self.min_skips = 5
@@ -236,6 +237,7 @@ class GuildMusicState:
 
         if self.playlist.empty():
             await self.stop()
+            await self.bot.change_presence(activity=None)
         else:
             next_song_info = self.playlist.get_song()
             await next_song_info.wait_until_downloaded()
@@ -243,6 +245,7 @@ class GuildMusicState:
             source.volume = self.player_volume
             self.voice_client.play(source, after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next_song(next_song_info, e), self.loop).result())
             await next_song_info.channel.send('Now playing {}'.format(next_song_info))
+            await self.bot.change_presence(activity=discord.Game(name=next_song_info.info["title"]))
 
 
 class Music:
@@ -276,7 +279,7 @@ class Music:
             pass # /shrug
 
     def get_music_state(self, guild_id):
-        return self.music_states.setdefault(guild_id, GuildMusicState(self.bot.loop))
+        return self.music_states.setdefault(guild_id, GuildMusicState(self.bot))
 
     async def can_content_be_played(self, song: SongInfo):
         if song.info["duration"] > self.bot.config["song_length"]:

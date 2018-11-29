@@ -56,7 +56,7 @@ def load_autoload_cogs():
             except Exception as e:
                 print(e)
             else:
-                print('Succesfully loaded cog {}'.format(entry))
+                print('Successfully loaded cog {}'.format(entry))
 
 def get_names_of_unloaded_cogs():
     '''
@@ -77,7 +77,7 @@ get_names_of_unloaded_cogs()
 async def list_cogs(ctx):
     '''Lists all cogs and their status of loading.'''
     cog_list = commands.Paginator(prefix='', suffix='')
-    cog_list.add_line('**✅ Succesfully loaded:**')
+    cog_list.add_line('**✅ Successfully loaded:**')
     for cog in bot.loaded_cogs:
         cog_list.add_line('- ' + cog)
     cog_list.add_line('**❌ Not loaded:**')
@@ -103,7 +103,7 @@ async def load(ctx, cog):
     else:
         bot.loaded_cogs.append(cog)
         bot.unloaded_cogs.remove(cog)
-        await ctx.send('✅ Cog succesfully loaded.')
+        await ctx.send('✅ Cog successfully loaded.')
 
 @bot.command()
 @commands.is_owner()
@@ -113,7 +113,7 @@ async def unload(ctx, cog):
     bot.unload_extension('cogs.{}'.format((cog)))
     bot.loaded_cogs.remove(cog)
     bot.unloaded_cogs.append(cog)
-    await ctx.send('✅ Cog succesfully unloaded.')
+    await ctx.send('✅ Cog successfully unloaded.')
 
 @bot.command()
 async def about(ctx):

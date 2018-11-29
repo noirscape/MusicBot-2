@@ -352,7 +352,10 @@ class Music:
 
         # Connect to the voice channel if needed
         if ctx.voice_client is None or not ctx.voice_client.is_connected():
-            await ctx.invoke(self.join)
+            try:
+                ctx.music_state.voice_client = await ctx.guild.get_channel(self.bot.config['voice_channel'][ctx.guild.id]).connect()
+            except KeyError:
+                await ctx.invoke(self.join)
 
         # Add the info to the playlist
         try:

@@ -611,12 +611,23 @@ class Music(commands.Cog):
         logging.info("%d listeners", listeners)
 
         # Calculate if percentage to skip matches
-        percentage_skip = len(ctx.music_state.skips) >= listeners * self.bot.config["percentage_skip"]
+        percentage_count = listeners * self.bot.config["percentage_skip"]
+        logging.info('%d minimum percentage skips', percentage_count)
+        percentage_skip = len(ctx.music_state.skips) >= percentage_count
 
         # Check if the song has to be skipped
-        if len(ctx.music_state.skips) > ctx.music_state.min_skips or percentage_skip or ctx.author == ctx.music_state.current_song.requester:
+        if len(ctx.music_state.skips) > ctx.music_state.min_skips or percentage_skip: #or ctx.author == ctx.music_state.current_song.requester:
             ctx.music_state.skips.clear()
             ctx.voice_client.stop()
+            await ctx.send("Skipped song!")
+        else:
+            if percentage_count < ctx.music_state.min_skips: # Percentage skip goes first
+                logging.info("Not skipping based on percentage")
+                remaining_count = percentage_count - len(ctx.music_state.skips)
+            else: # Minimum skip count otherwise
+                logging.info("Not skipping based on minimum skips")
+                remaining_count = ctx.music_state.min_skips - len(ctx.music_state.skips)
+            await ctx.send("Skip added. {} more user(s) need to skip.".format(int(round(remaining_count))))
 
     @commands.command()
     @has_super_powers()

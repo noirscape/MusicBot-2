@@ -6,3 +6,4 @@ song_length: 1200
 percentage_skip: 0.5
 voice_channel:
   server ID: channel ID
+owner_role: 'Owner'

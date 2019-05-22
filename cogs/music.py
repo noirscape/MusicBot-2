@@ -12,6 +12,7 @@ import discord.ext.commands as commands
 from yarl import URL
 import youtube_dl
 
+from utils.superpowers import has_super_powers, not_check_has_super_powers
 
 def setup(bot):
     bot.add_cog(Music(bot))
@@ -291,18 +292,16 @@ class Music(commands.Cog):
         return self.music_states.setdefault(guild_id, GuildMusicState(self.bot))
 
     async def can_content_be_played(self, song: SongInfo):
+        too_long = False
+        blacklist_status = False
         if song.info["duration"] > self.bot.config["song_length"]:
-            return None, None, True
+            too_long = True
+            return None, blacklist_status, too_long
         for blacklisted_item in self.blacklisted_videos:
             if blacklisted_item in song.info["title"] or blacklisted_item in song.info["description"] or blacklisted_item in song.info["id"] or blacklisted_item in song.info["uploader"]:
-                return blacklisted_item, False, False
-        return None, True, False
-
-    def has_super_powers():
-        async def predicate(ctx):
-            user_role_list = [x.name for x in ctx.author.roles]
-            return "Helpers" in user_role_list or "Staff" in user_role_list
-        return commands.check(predicate)
+                blacklist_status = True
+                return blacklisted_item, blacklist_status, too_long
+        return None, blacklist_status, too_long
 
     @commands.command(aliases=['np'])
     async def status(self, ctx):
@@ -355,9 +354,9 @@ class Music(commands.Cog):
 
         # Check if song can be played
         _, blacklist_status, video_too_long = await self.can_content_be_played(song)
-        if video_too_long:
+        if video_too_long and not await not_check_has_super_powers(ctx):
             raise MusicError('Video is too long (`{}` > `{}`)'.format(song.info["duration"], self.bot.config["song_length"]))
-        if not blacklist_status:
+        if blacklist_status:
             raise MusicError('Video content has been blacklisted. If you believe this to be in error, contact staff.')
 
         # Connect to the voice channel if needed
@@ -389,7 +388,6 @@ class Music(commands.Cog):
     async def play_error(self, ctx, error):
         await ctx.message.remove_reaction('\N{HOURGLASS}', ctx.me)
         await ctx.message.add_reaction('\N{CROSS MARK}')
-        await ctx.send(f'Something went wrong:')
         self.bot.logger.exception("Something went wrong:")
 
     @commands.command(name='remove') # Weird?

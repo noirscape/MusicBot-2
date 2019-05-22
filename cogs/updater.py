@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import aiohttp
+from utils.superpowers import is_special_owner
 
 def setup(bot):
     bot.add_cog(Git(bot))
@@ -31,14 +32,14 @@ class Git(commands.Cog):
                     return "Error with creating Hastebin. Status: %s" % resp.status
 
     @commands.group()
-    @commands.is_owner()
+    @is_special_owner()
     async def git(self, ctx):
         """Update the bot."""
         if ctx.invoked_subcommand is None:
             await ctx.invoke(self.bot.get_command('help'), ctx.command.qualified_name)
 
     @git.command()
-    @commands.is_owner()
+    @is_special_owner()
     async def pull(self, ctx):
         """Pull the GitHub repo
         """
@@ -46,7 +47,7 @@ class Git(commands.Cog):
         await ctx.author.send('Pulled changes:\n```' + output + '```')
 
     @git.command()
-    @commands.is_owner()
+    @is_special_owner()
     async def update_requirements(self, ctx):
         """Use pip to update the requirements.
         """
@@ -59,14 +60,7 @@ class Git(commands.Cog):
         await ctx.author.send(f'Updated requirements:\nstdout: {h_stdout}\nstderr: {h_stderr}')
 
     @git.command()
-    @commands.is_owner()
-    async def exit(self, ctx):
-        """Log the bot out, ending the blocking call and stopping the bot.
-        """
-        await self.bot.logout()
-
-    @git.command()
-    @commands.is_owner()
+    @is_special_owner()
     async def update(self, ctx):
         """General update command.
 
@@ -76,4 +70,11 @@ class Git(commands.Cog):
         await ctx.author.send('Updating requirements...')
         await ctx.invoke(self.bot.get_command('git update_requirements'))
         await ctx.author.send('Stopping bot...')
-        await ctx.invoke(self.bot.get_command('git exit'))
+        await ctx.invoke(self.bot.get_command('exit'))
+
+    @commands.command()
+    @is_special_owner()
+    async def exit(self, ctx):
+        """Log the bot out, ending the blocking call and stopping the bot.
+        """
+        await self.bot.logout()

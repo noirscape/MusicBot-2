@@ -187,6 +187,7 @@ class Playlist(asyncio.Queue):
     def __str__(self):
         info = 'Current playlist:\n'
         info_len = len(info)
+        highest_idx = 0
         for idx, song in enumerate(self, 1):
             highest_idx = idx
             s = '{}. {}'.format(idx, str(song))

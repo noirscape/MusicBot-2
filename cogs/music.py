@@ -595,6 +595,9 @@ class Music(commands.Cog):
         if ctx.author not in ctx.music_state.voice_client.channel.members:
             raise MusicError('You are not in the voice channel.')
 
+        if ctx.author.voice.deaf or ctx.author.voice.self_deaf:
+            raise MusicError('{} Not counting skip (you are deaf).'.format(ctx.author.mention))
+
         # Count the vote
         ctx.music_state.skips.add(ctx.author.id)
         await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}')

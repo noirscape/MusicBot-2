@@ -24,10 +24,14 @@ def duration_to_str(duration):
 
     # Create a fancy string
     duration = []
-    if days > 0: duration.append('{} days'.format(days))
-    if hours > 0: duration.append('{} hours'.format(hours))
-    if minutes > 0: duration.append('{} minutes'.format(minutes))
-    if seconds > 0 or len(duration) == 0: duration.append('{} seconds'.format(seconds))
+    if days == 1: duration.append('{} day'.format(int(round(days))))
+    elif days > 0: duration.append('{} days'.format(int(round(days))))
+    if hours == 1: duration.append('{} hour'.format(int(round(hours))))
+    elif hours > 0: duration.append('{} hours'.format(int(round(hours))))
+    if minutes == 1: duration.append('{} minute'.format(int(round(minutes))))
+    elif minutes > 0: duration.append('{} minutes'.format(int(round(minutes))))
+    if seconds == 1: duration.append('{} second'.format(int(round(seconds))))
+    elif seconds > 0 or len(duration) == 0: duration.append('{} seconds'.format(int(round(seconds))))
 
     return ', '.join(duration)
 

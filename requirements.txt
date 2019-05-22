@@ -1,5 +1,5 @@
 pyyaml
-git+https://github.com/Rapptz/discord.py@rewrite
+discord
 youtube-dl
 pynacl
 GitPython

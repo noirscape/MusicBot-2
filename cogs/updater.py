@@ -9,7 +9,7 @@ import aiohttp
 def setup(bot):
     bot.add_cog(Git(bot))
 
-class Git:
+class Git(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.repo = Repo(os.getcwd())

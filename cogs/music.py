@@ -65,7 +65,7 @@ class SongInfo:
         'logtostderr': False,
         'no_warnings': True,
         'quiet': True,
-        'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+        'outtmpl': 'audio-cache/%(extractor)s-%(id)s-%(title)s.%(ext)s',
         'noplaylist': True
     }
     ytdl = youtube_dl.YoutubeDL(ytdl_opts)

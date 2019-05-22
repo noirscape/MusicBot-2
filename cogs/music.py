@@ -5,6 +5,7 @@ import os
 import pathlib
 import re
 import json
+import datetime
 
 import discord
 import discord.ext.commands as commands
@@ -249,6 +250,7 @@ class GuildMusicState:
             await next_song_info.wait_until_downloaded()
             source = Song(next_song_info)
             source.volume = self.player_volume
+            self.started_playing_at = datetime.datetime.now()
             self.voice_client.play(source, after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next_song(next_song_info, e), self.loop).result())
             await next_song_info.channel.send('Now playing {} - Added by {}'.format(next_song_info, next_song_info.requester.mention))
             await self.bot.change_presence(activity=discord.Game(name=next_song_info.info["title"]))
@@ -306,7 +308,8 @@ class Music(commands.Cog):
         """Displays the currently played song."""
         if ctx.music_state.is_playing():
             song = ctx.music_state.current_song
-            await ctx.send('Playing {}. Volume at {} in {}'.format(song, str(song.volume * 100), ctx.voice_client.channel.mention))
+            seconds_in = duration_to_str((datetime.datetime.now() - ctx.music_state.started_playing_at).seconds)
+            await ctx.send('Playing {}. Volume at {} in {} ({} in)'.format(song, str(song.volume * 100), ctx.voice_client.channel.mention, seconds_in))
         else:
             await ctx.send('Not playing.')
 
@@ -617,7 +620,7 @@ class Music(commands.Cog):
         percentage_skip = len(ctx.music_state.skips) >= percentage_count
 
         # Check if the song has to be skipped
-        if len(ctx.music_state.skips) > ctx.music_state.min_skips or percentage_skip: #or ctx.author == ctx.music_state.current_song.requester:
+        if len(ctx.music_state.skips) > ctx.music_state.min_skips or percentage_skip or ctx.author == ctx.music_state.current_song.requester:
             ctx.music_state.skips.clear()
             ctx.voice_client.stop()
             await ctx.send("Skipped song!")

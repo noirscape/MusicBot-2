@@ -190,7 +190,7 @@ class Playlist(asyncio.Queue):
             highest_idx = idx
             s = '{}. {}'.format(idx, str(song))
             l = len(s) + 1 # Counting the extra \n
-            if info_len + l > 1995:
+            if info_len + l > 1955:
                 info += '[...]'
                 break
             info += '{}\n'.format(s)

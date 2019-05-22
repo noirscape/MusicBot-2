@@ -187,6 +187,7 @@ class Playlist(asyncio.Queue):
         info = 'Current playlist:\n'
         info_len = len(info)
         for idx, song in enumerate(self, 1):
+            highest_idx = idx
             s = '{}. {}'.format(idx, str(song))
             l = len(s) + 1 # Counting the extra \n
             if info_len + l > 1995:
@@ -194,6 +195,7 @@ class Playlist(asyncio.Queue):
                 break
             info += '{}\n'.format(s)
             info_len += l
+        info += 'Total songs in playlist: {}\n'.format(highest_idx)
         return info
 
 

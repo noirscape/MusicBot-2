@@ -602,8 +602,13 @@ class Music(commands.Cog):
         ctx.music_state.skips.add(ctx.author.id)
         await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 
-        # Get total amount of members in voice channel, exempting the bot.
-        listeners = len(ctx.music_state.voice_client.channel.members) - 1
+
+        # Get total amount of members in voice channel, exempting the bot and deafened users.
+        for listener in ctx.music_state.voice_client.channel.members:
+            logging.info("Listener: %s, Self deaf: %s, Guild deaf: %s", listener, listener.voice.self_deaf, listener.voice.deaf)
+        listeners_list = [x for x in ctx.music_state.voice_client.channel.members if not x.voice.deaf and not x.voice.self_deaf]
+        listeners = len(listeners_list) - 1
+        logging.info("%d listeners", listeners)
 
         # Calculate if percentage to skip matches
         percentage_skip = len(ctx.music_state.skips) >= listeners * self.bot.config["percentage_skip"]

@@ -385,6 +385,7 @@ class Music(commands.Cog):
     async def play_error(self, ctx, error):
         await ctx.message.remove_reaction('\N{HOURGLASS}', ctx.me)
         await ctx.message.add_reaction('\N{CROSS MARK}')
+        await ctx.send(f'Something went wrong:')
         self.bot.logger.exception("Something went wrong:")
 
     @commands.command(name='remove') # Weird?

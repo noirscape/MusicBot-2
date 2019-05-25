@@ -347,7 +347,10 @@ class Music(commands.Cog):
         """
         if ctx.author.id in self.blacklisted_users:
             raise MusicError('Cannot add track, {} has been blacklisted.'.format(ctx.author))
-        await ctx.message.add_reaction('\N{HOURGLASS}')
+        try:
+            await ctx.message.add_reaction('\N{HOURGLASS}')
+        except:
+            pass
 
         # Create the SongInfo
         song = await SongInfo.create(request, ctx.author, ctx.channel, loop=ctx.bot.loop)
@@ -381,13 +384,19 @@ class Music(commands.Cog):
             ctx.bot.loop.create_task(song.download(ctx.bot.loop))
             await ctx.send('Queued {} in position **#{}**'.format(song, ctx.music_state.playlist.qsize()))
 
-        await ctx.message.remove_reaction('\N{HOURGLASS}', ctx.me)
-        await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}')
+        try:
+            await ctx.message.remove_reaction('\N{HOURGLASS}', ctx.me)
+            await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}')
+        except:
+            pass
 
     @play.error
     async def play_error(self, ctx, error):
-        await ctx.message.remove_reaction('\N{HOURGLASS}', ctx.me)
-        await ctx.message.add_reaction('\N{CROSS MARK}')
+        try:
+            await ctx.message.remove_reaction('\N{HOURGLASS}', ctx.me)
+            await ctx.message.add_reaction('\N{CROSS MARK}')
+        except:
+            pass
         self.bot.logger.exception("Something went wrong:")
 
     @commands.command(name='remove') # Weird?
@@ -603,7 +612,10 @@ class Music(commands.Cog):
 
         # Count the vote
         ctx.music_state.skips.add(ctx.author.id)
-        await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}')
+        try:
+            await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}')
+        except:
+            pass
 
 
         # Get total amount of members in voice channel, exempting the bot and deafened users.

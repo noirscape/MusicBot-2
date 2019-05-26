@@ -3,3 +3,4 @@ config.yml
 **.pyc
 venv
 blacklist.json
+audio-cache

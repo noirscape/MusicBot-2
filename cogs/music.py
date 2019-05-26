@@ -14,6 +14,9 @@ import youtube_dl
 
 from utils.superpowers import has_super_powers, not_check_has_super_powers
 
+# TODO: Settings deafen
+# TODO: Mention only on first add in sequence
+
 def setup(bot):
     bot.add_cog(Music(bot))
 
@@ -211,6 +214,7 @@ class GuildMusicState:
         self.player_volume = 0.5
         self.skips = set()
         self.min_skips = 5
+        self.previous_queuer = discord.Object(bot.user.id) # Bot cannot add tracks, making it a save initialization choice
 
     @property
     def current_song(self):
@@ -254,7 +258,11 @@ class GuildMusicState:
             source.volume = self.player_volume
             self.started_playing_at = datetime.datetime.now()
             self.voice_client.play(source, after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next_song(next_song_info, e), self.loop).result())
-            await next_song_info.channel.send('Now playing {} - Added by {}'.format(next_song_info, next_song_info.requester.mention))
+            play_str = 'Now playing {}'.format(next_song_info)
+            if self.previous_queuer.id != next_song_info.requester.id:
+                play_str = play_str.replace('`' + str(next_song_info.requester) + '`', next_song_info.requester.mention)
+            self.previous_queuer = next_song_info.requester
+            await next_song_info.channel.send(play_str)
             await self.bot.change_presence(activity=discord.Game(name=next_song_info.info["title"]))
 
 

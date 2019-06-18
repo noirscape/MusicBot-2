@@ -274,6 +274,7 @@ class Music(commands.Cog):
             blacklist_dict = json.load(blacklist)
             self.blacklisted_users = set(blacklist_dict["users"])
             self.blacklisted_videos = set(blacklist_dict["videos"])
+        self.bot.loop.create_task(self.map_channels())
 
     def cog_unload(self):
         for state in self.music_states.values():
@@ -298,6 +299,17 @@ class Music(commands.Cog):
 
     def get_music_state(self, guild_id):
         return self.music_states.setdefault(guild_id, GuildMusicState(self.bot))
+
+
+    async def map_channels(self):
+        await self.bot.wait_until_ready()
+        config_dict = {}
+        for guild_id in self.bot.config["voice_channel"]:
+            config_dict[guild_id] = []
+            for channel_id in self.bot.config["voice_channel"][guild_id]:
+                config_dict[guild_id].append(self.bot.get_channel(channel_id))
+        self.valid_channels = config_dict
+        print(self.valid_channels)
 
     async def can_content_be_played(self, song: SongInfo):
         too_long = False
@@ -370,10 +382,14 @@ class Music(commands.Cog):
         if blacklist_status:
             raise MusicError('Video content has been blacklisted. If you believe this to be in error, contact staff.')
 
+        if not ctx.author.voice or not ctx.author.voice.channel or ctx.author.voice.channel.id not in [x.id for x in self.valid_channels[ctx.guild.id]]:
+            clean_channel_list = ['`' + x.name + '`' for x in self.valid_channels[ctx.guild.id]]
+            raise MusicError('You are not in a valid voice channel. Valid voice channels are {}'.format(", ".join(clean_channel_list)))
+
         # Connect to the voice channel if needed
         if ctx.voice_client is None or not ctx.voice_client.is_connected():
             try:
-                ctx.music_state.voice_client = await ctx.guild.get_channel(self.bot.config['voice_channel'][ctx.guild.id]).connect()
+                ctx.music_state.voice_client = await ctx.author.voice.channel.connect()
             except KeyError:
                 await ctx.invoke(self.join)
 

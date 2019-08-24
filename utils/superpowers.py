@@ -5,7 +5,7 @@ def has_super_powers():
 
 async def not_check_has_super_powers(ctx: commands.Context):
     user_role_list = [x.name for x in ctx.author.roles]
-    return "Helpers" in user_role_list or "Staff" in user_role_list
+    return any(x in user_role_list for x in ctx.bot.config["super_power_roles"])
 
 def is_special_owner():
     return commands.check(not_check_is_special_owner)
